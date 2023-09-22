@@ -1,0 +1,45 @@
+# The name of the action
+name: CI
+# paths: will run tests only if code in the given directory changes
+
+# When the action is triggered
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "*/*.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "*/*.py"
+
+
+# What to do when the action is triggered
+jobs:
+  # A job called 'build' - arbitrary
+  build:
+    # Run on a Ubuntu VM
+    runs-on: ubuntu-latest
+    # Start mysql
+    steps:
+      # Checkout the GitHub repo
+      - uses: actions/checkout@v2
+
+      # Install Python 3.9
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      # Pip install project dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Move into the project folder and run pytest
+      - name: Test with pytest
+        working-directory: .
+        run: pytest -vv
